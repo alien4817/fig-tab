@@ -1,223 +1,130 @@
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
-from matplotlib.patches import FancyBboxPatch, Circle, FancyArrowPatch, Wedge
+from matplotlib.patches import Circle, FancyArrowPatch
 import numpy as np
+import textwrap
 
-# Create figure
-fig, ax = plt.subplots(figsize=(16, 16))
-ax.set_xlim(-10, 10)
-ax.set_ylim(-10, 10)
-ax.axis('off')
+# Figure 4: Service Cycle (High-Touch Patient Journey)
+# Requirements addressed:
+# 1) Circles use distinct colors and are labeled with numbers.
+# 2) Title will not be covered (extra top margin + lower diagram center).
+# 3) Text boxes placed outward with alternating radii to avoid overlap.
 
-# Center circle
-center_circle = Circle((0, 0), 1, color='#2E86AB', alpha=0.95, zorder=5)
-ax.add_patch(center_circle)
-ax.text(0, 0.2, 'Patient', ha='center', va='center', 
-        fontsize=13, weight='bold', color='white', zorder=6)
-ax.text(0, -0.25, 'Journey', ha='center', va='center', 
-        fontsize=11, weight='bold', color='white', zorder=6)
+def wrap(s, width=30):
+    return "\n".join(textwrap.wrap(s, width=width, break_long_words=False))
 
-# Define 6 stages with better spacing
-stages = [
-    {
-        'num': '1',
-        'title': 'Local Access',
-        'location': 'In Mongolia',
-        'desc': ['Patient visits', 'MOU Hospital'],
-        'angle': 90,
-        'color': '#90BE6D',
-        'box_offset': 0  # No offset
-    },
-    {
-        'num': '2',
-        'title': 'Tech Bridge',
-        'location': '5G Platform',
-        'desc': ['Weekly 5G', 'Tele-consultation'],
-        'angle': 30,
-        'color': '#4361EE',
-        'box_offset': 0
-    },
-    {
-        'num': '3',
-        'title': 'Admin Support',
-        'location': '80% Market Share',
-        'desc': ['Visa Assistance', 'Travel Setup'],
-        'angle': -30,
-        'color': '#F9844A',
-        'box_offset': 0
-    },
-    {
-        'num': '4',
-        'title': 'Cultural Arrival',
-        'location': 'Cultural Broker',
-        'desc': ['Airport Pickup', 'Accommodation', 'Language Support'],
-        'angle': -90,
-        'color': '#F9C74F',
-        'box_offset': 0.3  # Slightly larger box
-    },
-    {
-        'num': '5',
-        'title': 'Clinical Care',
-        'location': 'In Taiwan',
-        'desc': ['District Hospital', '+ Medical Center', 'Support'],
-        'angle': -150,
-        'color': '#E63946',
-        'box_offset': 0.2
-    },
-    {
-        'num': '6',
-        'title': 'Return & Continuity',
-        'location': 'Back to Mongolia',
-        'desc': ['Follow-up by', 'Local Nurses'],
-        'angle': 150,
-        'color': '#577590',
-        'box_offset': 0
-    }
+steps = [
+    ("Local Access",
+     "Patient visits an MOU hospital in Mongolia."),
+    ("Tech Bridge",
+     "Weekly 5G tele-consultation for diagnosis/plan."),
+    ("Admin Support",
+     "Visa assistance (≈80% market share)."),
+    ("Cultural Arrival",
+     '“Cultural Broker” (Mongolian spouse): airport pickup, accommodation, language support.'),
+    ("Clinical Care",
+     "District hospital agility + medical center support/transfer if needed."),
+    ("Return & Continuity",
+     "Follow-up by trained local nurses after returning home."),
 ]
 
-# Draw stages - well-spaced layout
-radius = 6.5
-for stage in stages:
-    angle_rad = np.radians(stage['angle'])
-    x = radius * np.cos(angle_rad)
-    y = radius * np.sin(angle_rad)
-    
-    # Box dimensions based on content
-    box_width = 2.4
-    box_height = 2.0 + stage['box_offset']
-    
-    # Draw stage box
-    box = FancyBboxPatch((x - box_width/2, y - box_height/2), 
-                         box_width, box_height,
-                         boxstyle="round,pad=0.1",
-                         facecolor=stage['color'], 
-                         edgecolor='white',
-                         linewidth=2.5, alpha=0.9, zorder=3)
-    ax.add_patch(box)
-    
-    # Step number badge at top
-    badge_y = y + box_height/2 - 0.25
-    badge = Circle((x, badge_y), 0.22, color='white', alpha=1, zorder=4)
-    ax.add_patch(badge)
-    ax.text(x, badge_y, stage['num'],
-           ha='center', va='center', fontsize=11, weight='bold',
-           color=stage['color'], zorder=5)
-    
-    # Title
-    title_y = y + box_height/2 - 0.65
-    ax.text(x, title_y, stage['title'],
-           ha='center', va='center', fontsize=10, weight='bold',
-           color='white', zorder=4)
-    
-    # Location/subtitle
-    location_y = title_y - 0.28
-    ax.text(x, location_y, stage['location'],
-           ha='center', va='center', fontsize=7.5, style='italic',
-           color='white', alpha=0.95, zorder=4)
-    
-    # Description lines
-    desc_start_y = location_y - 0.35
-    for i, line in enumerate(stage['desc']):
-        ax.text(x, desc_start_y - (i * 0.22), line,
-               ha='center', va='center', fontsize=7.5,
-               color='white', zorder=4)
-    
-    # Connecting line to center
-    inner_r = 1.3
-    outer_r = radius - 1.4
-    
-    x_in = inner_r * np.cos(angle_rad)
-    y_in = inner_r * np.sin(angle_rad)
-    x_out = outer_r * np.cos(angle_rad)
-    y_out = outer_r * np.sin(angle_rad)
-    
-    connector = FancyArrowPatch((x_in, y_in), (x_out, y_out),
-                               arrowstyle='<->', mutation_scale=15,
-                               linewidth=1.8, color=stage['color'], 
-                               alpha=0.4, zorder=2)
-    ax.add_patch(connector)
+# Distinct node colors (6 variations)
+node_colors = ["#2E86AB", "#F18F01", "#A23B72", "#2E7D32", "#C1121F", "#6C3483"]
 
-# Draw circular flow arrows
-flow_radius = 8.2
-for i in range(len(stages)):
-    next_i = (i + 1) % len(stages)
-    
-    angle1 = stages[i]['angle']
-    angle2 = stages[next_i]['angle']
-    
-    # Handle wraparound
-    if i == len(stages) - 1:
-        angle2 += 360
-    
-    # Calculate arc points
-    arc_span = 15  # degrees from each box
-    start_angle = angle1 - arc_span
-    end_angle = angle2 + arc_span
-    
-    x1 = flow_radius * np.cos(np.radians(start_angle))
-    y1 = flow_radius * np.sin(np.radians(start_angle))
-    x2 = flow_radius * np.cos(np.radians(end_angle))
-    y2 = flow_radius * np.sin(np.radians(end_angle))
-    
-    # Curved arrow
-    flow_arrow = FancyArrowPatch((x1, y1), (x2, y2),
-                                arrowstyle='->', mutation_scale=20,
-                                linewidth=2.5, color='#AAAAAA',
-                                alpha=0.6, zorder=1,
-                                connectionstyle="arc3,rad=0.3")
-    ax.add_patch(flow_arrow)
+# ---- Canvas ----
+fig, ax = plt.subplots(figsize=(12, 8.6))
+ax.set_aspect("equal")
+ax.axis("off")
+ax.set_xlim(-7.8, 7.8)
+ax.set_ylim(-6.4, 6.4)
 
-# Key insights - positioned outside main circle
-# Insight 1: 80% Market Share
-insight1_box = FancyBboxPatch((5, 8.5), 4, 0.9,
-                              boxstyle="round,pad=0.15",
-                              facecolor='#FFE5B4', edgecolor='#F9844A',
-                              linewidth=2.5, alpha=0.95, zorder=10)
-ax.add_patch(insight1_box)
-ax.text(7, 9.1, '80% Market Share', ha='center', va='center',
-       fontsize=10.5, weight='bold', color='#F9844A', zorder=11)
-ax.text(7, 8.75, 'Medical Visa Processing', ha='center', va='center',
-       fontsize=8, style='italic', color='#F9844A', zorder=11)
+# Title: placed high, with extra padding; diagram center moved downward
+ax.text(
+    0, 6.05, 'Figure 4: The "High-Touch" Patient Journey (Service Cycle)',
+    ha="center", va="center", fontsize=16, weight="bold", zorder=50
+)
 
-# Insight 2: Cultural Broker
-insight2_box = FancyBboxPatch((-9, 8.5), 4, 0.9,
-                              boxstyle="round,pad=0.15",
-                              facecolor='#FFF9E6', edgecolor='#F9C74F',
-                              linewidth=2.5, alpha=0.95, zorder=10)
-ax.add_patch(insight2_box)
-ax.text(-7, 9.1, 'Cultural Broker', ha='center', va='center',
-       fontsize=10.5, weight='bold', color='#F9C74F', zorder=11)
-ax.text(-7, 8.75, 'High Patient Loyalty', ha='center', va='center',
-       fontsize=8, style='italic', color='#F9C74F', zorder=11)
+# ---- Layout (shifted down to protect title area) ----
+n = len(steps)
+angles = np.linspace(np.pi/2, np.pi/2 - 2*np.pi, n, endpoint=False)  # start at top, clockwise
 
-# Title
-title_box = FancyBboxPatch((-7.5, 9.5), 15, 0.6,
-                          boxstyle="round,pad=0.1",
-                          facecolor='#2E86AB', edgecolor='#1565C0',
-                          linewidth=3, alpha=0.95, zorder=15)
-ax.add_patch(title_box)
-ax.text(0, 9.8, 'Figure 4: The "High-Touch" Patient Journey',
-       ha='center', va='center', fontsize=16, weight='bold',
-       color='white', zorder=16)
+center = (0.0, -0.75)     # shift the whole cycle down so title is safe
+node_ring_r = 3.05        # node radius ring
+node_r = 0.58             # node circle radius
+text_r_base = 4.55        # baseline text radius
+text_r_list = [text_r_base + (0.75 if i % 2 == 0 else 0.20) for i in range(n)]  # alternate to reduce overlap
 
-# Subtitle at bottom
-ax.text(0, -8.8, 'Service Cycle: Comprehensive Patient Support from Mongolia to Taiwan',
-       ha='center', va='center', fontsize=11, style='italic',
-       color='#555555',
-       bbox=dict(boxstyle='round,pad=0.4', facecolor='#F5F5F5',
-                edgecolor='#CCCCCC', linewidth=2))
+node_xy = []
 
-# Add flow direction indicator
-ax.text(0, -9.5, '→ Clockwise Flow →', ha='center', va='center',
-       fontsize=9, color='#999999', style='italic')
+# ---- Draw nodes + labels + outward text boxes ----
+for i, (title, desc) in enumerate(steps):
+    a = angles[i]
+    nx = center[0] + node_ring_r * np.cos(a)
+    ny = center[1] + node_ring_r * np.sin(a)
+    node_xy.append((nx, ny))
 
-# Save
+    # Node circle with distinct color
+    ax.add_patch(Circle((nx, ny), node_r, facecolor=node_colors[i], edgecolor="none", alpha=0.96, zorder=10))
+
+    # Number label inside node
+    ax.text(nx, ny, str(i + 1), ha="center", va="center",
+            fontsize=14, weight="bold", color="white", zorder=12)
+
+    # Text box position (farther out)
+    tr = text_r_list[i]
+    tx = center[0] + tr * np.cos(a)
+    ty = center[1] + tr * np.sin(a)
+
+    # Alignment by quadrant
+    ha = "left" if np.cos(a) > 0.2 else ("right" if np.cos(a) < -0.2 else "center")
+    va = "bottom" if np.sin(a) > 0.2 else ("top" if np.sin(a) < -0.2 else "center")
+
+    box_text = f"{i+1}. {title}\n{wrap(desc, 32)}"
+
+    ax.text(
+        tx, ty, box_text,
+        ha=ha, va=va, fontsize=10.5, weight="bold", color="#111111",
+        bbox=dict(boxstyle="round,pad=0.42", facecolor="white", edgecolor="#333333",
+                  linewidth=1.6, alpha=0.98),
+        zorder=20
+    )
+
+    # Connector line to the text box (kept subtle)
+    ax.plot([nx, tx], [ny, ty], linewidth=1.15, alpha=0.35, zorder=5)
+
+# ---- Draw cycle arrows between nodes ----
+for i in range(n):
+    x1, y1 = node_xy[i]
+    x2, y2 = node_xy[(i + 1) % n]
+
+    # Create a small shrink so arrow doesn't touch node circles
+    v1 = np.array([x1 - center[0], y1 - center[1]])
+    v2 = np.array([x2 - center[0], y2 - center[1]])
+    v1u = v1 / (np.linalg.norm(v1) + 1e-9)
+    v2u = v2 / (np.linalg.norm(v2) + 1e-9)
+
+    start = (x1 - v1u[0] * (node_r * 0.95), y1 - v1u[1] * (node_r * 0.95))
+    end   = (x2 - v2u[0] * (node_r * 0.95), y2 - v2u[1] * (node_r * 0.95))
+
+    ax.add_patch(FancyArrowPatch(
+        start, end,
+        arrowstyle="-|>", mutation_scale=18,
+        linewidth=2.2, alpha=0.9,
+        connectionstyle="arc3,rad=-0.25",  # clockwise curve
+        zorder=8
+    ))
+
+# Center label
+ax.text(
+    center[0], center[1], "Service Cycle",
+    ha="center", va="center", fontsize=12, weight="bold",
+    bbox=dict(boxstyle="round,pad=0.35", facecolor="white",
+              edgecolor="#2E86AB", linewidth=1.8, alpha=0.95),
+    zorder=15
+)
+
 plt.tight_layout()
-plt.savefig('Figure4_High_Touch_Patient_Journey.png', dpi=300,
-           bbox_inches='tight', facecolor='white', edgecolor='none')
+plt.savefig("Figure4_ServiceCycle_HighTouch_PatientJourney.png", dpi=300, bbox_inches="tight",
+            facecolor="white", edgecolor="none")
 plt.show()
 
-print("✅ Figure 4 generated successfully!")
-print("📁 Filename: 'Figure4_High_Touch_Patient_Journey.png'")
-print("🔄 6-stage service cycle with no text overlap")
-print("⭐ Key features highlighted: 80% Market Share & Cultural Broker")
+print("Saved: Figure4_ServiceCycle_HighTouch_PatientJourney.png")
