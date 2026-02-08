@@ -11,21 +11,21 @@ ax.axis('off')
 
 # ===== Concentric Circle Structure =====
 # Outermost layer: Global Network
-outer_circle = Circle((0, 0), 7.5, color='#E8F4F8', alpha=0.3, 
+outer_circle = Circle((0, 0), 7.5, color="#88D9F4", alpha=0.3, 
                       edgecolor='#2E86AB', linewidth=2, linestyle='--', zorder=1)
 ax.add_patch(outer_circle)
 ax.text(0, 7.8, 'Global Network Layer', ha='center', va='center', 
         fontsize=11, style='italic', color='#2E86AB', weight='bold')
 
 # Second layer: Strategic Alliance
-middle_circle = Circle((0, 0), 5.5, color='#FFF9E6', alpha=0.4, 
+middle_circle = Circle((0, 0), 5.5, color="#F7E097", alpha=0.4, 
                        edgecolor='#F18F01', linewidth=2, linestyle='--', zorder=2)
 ax.add_patch(middle_circle)
 ax.text(0, 5.8, 'Strategic Alliance Layer', ha='center', va='center', 
         fontsize=11, style='italic', color='#F18F01', weight='bold')
 
 # Third layer: Integration Platform
-inner_circle = Circle((0, 0), 3.5, color='#F0E6F6', alpha=0.4, 
+inner_circle = Circle((0, 0), 3.5, color="#D092F4", alpha=0.4, 
                       edgecolor='#A23B72', linewidth=2, linestyle='--', zorder=3)
 ax.add_patch(inner_circle)
 ax.text(0, 3.8, 'Integration Platform Layer', ha='center', va='center', 
@@ -37,12 +37,12 @@ core_circle = Circle((0, 0), 2, color='#E3F2FD', alpha=0.6,
 ax.add_patch(core_circle)
 
 # ===== Center Hub =====
-center_circle = Circle((0, 0), 1.4, color='#2E86AB', alpha=0.95, zorder=5)
+center_circle = Circle((0, 0), 1.4, color="#0F77A4", alpha=0.95, zorder=5)
 ax.add_patch(center_circle)
 
 # Center text
 ax.text(0, 0.5, 'Yuan Rung Hospital', ha='center', va='center', 
-        fontsize=18, weight='bold', color='orange', zorder=6)
+        fontsize=16, weight='bold', color='orange', zorder=6)
 ax.text(0, 0, '(District Hospital)', ha='center', va='center', 
         fontsize=11, color='white', zorder=6)
 ax.text(0, -0.5, 'Resource Integrator', ha='center', va='center', 
@@ -52,8 +52,8 @@ ax.text(0, -0.5, 'Resource Integrator', ha='center', va='center',
 core_functions = [
     ('Patient\nCoordination', -1.2, 2.5, 0),
     ('Quality\nControl', 1.2, 2.5, 0),
-    ('Cultural\nBrokerage', -2.5, 0.8, 270),
-    ('Admin\nSupport', 2.5, 0.8, 90)
+    ('Cultural\nBrokerage', -2.5, -0.3, 270),
+    ('Admin\nSupport', 2.5, -0.3, 90)
 ]
 
 for text, x, y, rotation in core_functions:
@@ -98,11 +98,20 @@ for name, x, y in medical_centers:
     ax.add_patch(arrow)
 
 # Connection label
-ax.text(-4.5, 1.8, 'Green Channel\nTertiary Support', 
+ax.text(-4.5,-0.3, 'Green Channel\nTertiary Support', 
         ha='center', va='center',
-        fontsize=9, weight='bold', color='#A23B72', 
-        bbox=dict(boxstyle='round,pad=0.4', facecolor='#E8F5E9', 
-                 edgecolor='#4CAF50', linewidth=2, alpha=0.95), zorder=4)
+        fontsize=14, 
+        weight='bold', 
+        color='#A23B72',
+        rotation=270,  # 文字直的
+        bbox=dict(
+            boxstyle='round,pad=1.0',  # ← 把 pad 加大 (原本0.4)
+            facecolor='#E8F5E9',
+            edgecolor='#4CAF50',
+            linewidth=3,   # 邊框粗一點
+            alpha=1        # 完全不透明
+        ),
+        zorder=100)       # 保證蓋過所有線
 
 # Specialty Alliances label
 ax.text(-8.5, -1, '[ Specialty Alliances ]', ha='center', va='center', 
@@ -138,10 +147,11 @@ ax.text(7.5, 6.4, 'Mongolia Network', ha='center', va='center',
         fontsize=12, style='italic', color='#C1121F')
 
 # Connection label
-ax.text(4.5, 1.8, 'Capacity Building\n& Patient Referral', 
+ax.text(4.5, -0.3, 'Capacity Building\n& Patient Referral', 
         ha='center', va='center',
-        fontsize=9, weight='bold', color='#C1121F', 
-        bbox=dict(boxstyle='round,pad=0.4', facecolor='#FFEBEE', 
+        fontsize=14, weight='bold', color='#C1121F', 
+        rotation=90,  # 文字直的
+        bbox=dict(boxstyle='round,pad=1', facecolor='#FFEBEE', 
                  edgecolor='#C1121F', linewidth=2, alpha=0.95), zorder=4)
 
 # Tertiary Level
